@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_lru_cache/lru_cache.dart';
 import 'package:flutter_playground/base/q_tree_key.dart';
+import 'package:flutter_playground/log.dart';
 import 'package:flutter_playground/map/layer/map_tiles.dart';
 import 'package:flutter_playground/map/layer/utils.dart';
 import 'package:flutter_playground/map/map_canvas.dart';
@@ -42,7 +43,7 @@ class AsyncMapLayer extends MapLayer {
   final double _res;
   final Future<MapTile> Function(int key) _tileLoader;
   final _tiles = LRUCache<int, MapTile>(2000);
-  final _semaphore = Semaphore(8);
+  final _semaphore = Semaphore(16);
   final _loadingTiles = <int, Future<MapTile>>{};
   final StreamController<int> _tileUpdates = StreamController.broadcast();
 
@@ -73,11 +74,13 @@ class AsyncMapLayer extends MapLayer {
         final tile = await future;
         _tiles[key] = tile;
         _tileUpdates.add(key);
+      } catch (e) {
+        print("catch:${e}");
       } finally {
         _loadingTiles.remove(key);
       }
     } else {
-      print("tile not visible:${key.keyString()}");
+      logger.d("tile not visible:${key.keyString()}");
     }
     _semaphore.release();
   }

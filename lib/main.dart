@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_playground/base/location.dart';
-import 'package:flutter_playground/base/q_tree_key.dart';
-import 'package:flutter_playground/ext/mvt/mvt_tile.dart';
-import 'package:flutter_playground/ext/mvt/vector_tile.pb.dart';
-import 'package:flutter_playground/map/layer/map_tiles.dart';
-import 'package:flutter_playground/map/layer/utils.dart';
+import 'package:flutter_playground/ext/mvt/parse_kit/bing.dart';
 import 'package:flutter_playground/map/map_canvas.dart';
 import 'package:flutter_playground/map/layer/map_layer.dart';
 
@@ -42,34 +38,28 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     center: const Location(0.5, 0.5),
     zoomLvl: 1.5,
   );
+
+  final BingLayers bingLayers = BingLayers(0);
+
   final List<MapLayer> layers = [
-    FallbackLayer(
-        AsyncMapLayer(
-            urlAndCacheImageTileLiader(
-                (key) {
-                  return "https://gwxc.shipxy.com/tile.g?z=${key.depth}&x=${key.x}&y=${key.y}";
-                },
-                "tiles/img",
-                (key) {
-                  return "${key.depth}_${key.x}_${key.y}.png";
-                }),
-            0.4), (int k) {
-      return SolidTile(Color.fromRGBO(
-        (k.depth * 8) % 256,
-        (255 - k.depth * 8) % 256,
-        ((k.x + k.y) % 2 == 0) ? k.depth % 256 : (255 - k.depth) % 256,
-        1.0,
-      )) as MapTile;
-    }),
-    AsyncMapLayer((key) {
-      return fetchBytes(
-              "https://r2.dynamic.tiles.ditu.live.com/comp/ch/${key.depth}-${key.x}-${key.y}.mvt?mkt=zh-CN,en-US&it=G,AP,L,LA&jp=0&js=1&tj=1&ur=cn&cstl=s23&mvt=1&features=mvt,mvttxtmaxw,mvtfcall,lsoft&og=1&st=bld%7Cv:0_g%7Cpv:1&sv=9.27")
-          .then((value) {
-        return Tile.fromBuffer(value);
-      }).then((value) {
-        return MvtTile(value);
-      });
-    }, -0.5)
+    // FallbackLayer(
+    //     AsyncMapLayer(
+    //         urlAndCacheImageTileLiader(
+    //             (key) {
+    //               return "https://gwxc.shipxy.com/tile.g?z=${key.depth}&x=${key.x}&y=${key.y}";
+    //             },
+    //             "tiles/img",
+    //             (key) {
+    //               return "${key.depth}_${key.x}_${key.y}.png";
+    //             }),
+    //         0.4), (int k) {
+    //   return SolidTile(Color.fromRGBO(
+    //     (k.depth * 8) % 256,
+    //     (255 - k.depth * 8) % 256,
+    //     ((k.x + k.y) % 2 == 0) ? k.depth % 256 : (255 - k.depth) % 256,
+    //     1.0,
+    //   )) as MapTile;
+    // }),
   ];
 
   late FlingController flingController;
@@ -90,13 +80,25 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   double? zoom;
 
   _MyHomePageState() {
-    for (var layer in layers) {
-      layer.getTileChangeStream().listen((event) {
-        setState(() {
-          print("update:${event.keyString()}");
-        });
-      });
-    }
+    layers.add(BingMapLayer(bingLayers, (s) {
+      return s?.backgroundTile;
+    }));
+    layers.add(BingMapLayer(bingLayers, (s) {
+      return s?.roadTile;
+    }));
+    layers.add(BingMapLayer(bingLayers, (s) {
+      return s?.textTile;
+    }));
+    bingLayers.getTileChangeStream().listen((event) {
+      setState(() {});
+    });
+    // for (var layer in layers) {
+    //   layer.getTileChangeStream().listen((event) {
+    //     setState(() {
+    //       // print("update:${event.keyString()}");
+    //     });
+    //   });
+    // }
   }
 
   @override
