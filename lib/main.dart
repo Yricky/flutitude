@@ -3,9 +3,10 @@ import 'package:flutitude/map/layer/map_tiles.dart';
 import 'package:flutitude/map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutitude/base/location.dart';
-import 'package:flutitude/ext/mvt/parse_kit/bing.dart';
 import 'package:flutitude/map/map_canvas.dart';
 import 'package:flutitude/map/layer/map_layer.dart';
+
+import 'bing.dart';
 
 void main() {
   runApp(const MyApp());
