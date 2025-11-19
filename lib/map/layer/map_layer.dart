@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_lru_cache/lru_cache.dart';
-import 'package:flutter_playground/base/q_tree_key.dart';
-import 'package:flutter_playground/log.dart';
-import 'package:flutter_playground/map/layer/map_tiles.dart';
-import 'package:flutter_playground/map/layer/utils.dart';
-import 'package:flutter_playground/map/map_canvas.dart';
+import 'package:flutitude/base/q_tree_key.dart';
+import 'package:flutitude/log.dart';
+import 'package:flutitude/map/layer/map_tiles.dart';
+import 'package:flutitude/map/layer/utils.dart';
+import 'package:flutitude/map/map_canvas.dart';
 
 abstract class MapLayer {
   double zoomResolution();
@@ -100,21 +100,21 @@ class AsyncMapLayer extends MapLayer {
 
 Future<MapTile> Function(int key) urlAndCacheImageTileLiader(
   String Function(int) urlBuilder,
-  String cacheDir,
+  String? cacheDir,
   String Function(int) cacheKeyBuilder,
 ) {
-  final FileCache cache = FileCache(cacheDir);
+  final FileCache? cache = cacheDir != null ? FileCache(cacheDir) : null;
   return (int key) async {
     final url = urlBuilder(key);
     final cacheKey = cacheKeyBuilder(key);
-    final file = await cache.read(cacheKey);
+    final file = await cache?.read(cacheKey);
     if (file != null) {
       final image = await decodeImage(file);
       return ImageMapTile(image);
     }
     final response = await fetchBytes(url);
     final image = await decodeImage(response);
-    cache.write(cacheKey, response);
+    cache?.write(cacheKey, response);
     return ImageMapTile(image);
   };
 }

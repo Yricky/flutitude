@@ -1,8 +1,7 @@
 import 'dart:ui';
 
-import 'package:flutter/painting.dart';
-import 'package:flutter_playground/ext/mvt/draw_kit/draw_cache.dart';
-import 'package:flutter_playground/map/layer/map_tiles.dart';
+import 'package:flutitude/ext/mvt/draw_kit/draw_cache.dart';
+import 'package:flutitude/map/layer/map_tiles.dart';
 
 class MvtTile extends MapTile {
   final List<DrawCacheItem> drawCache;

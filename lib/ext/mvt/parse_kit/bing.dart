@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_lru_cache/lru_cache.dart';
-import 'package:flutter_playground/base/q_tree_key.dart';
-import 'package:flutter_playground/ext/mvt/command_extension.dart';
-import 'package:flutter_playground/ext/mvt/draw_kit/draw_cache.dart';
-import 'package:flutter_playground/ext/mvt/mvt_tile.dart';
-import 'package:flutter_playground/ext/mvt/parse_kit/common.dart';
-import 'package:flutter_playground/ext/mvt/vector_tile.pb.dart';
-import 'package:flutter_playground/log.dart';
-import 'package:flutter_playground/map/layer/map_layer.dart';
-import 'package:flutter_playground/map/layer/map_tiles.dart';
-import 'package:flutter_playground/map/layer/utils.dart';
-import 'package:flutter_playground/map/map_canvas.dart';
+import 'package:flutitude/base/q_tree_key.dart';
+import 'package:flutitude/ext/mvt/command_extension.dart';
+import 'package:flutitude/ext/mvt/draw_kit/draw_cache.dart';
+import 'package:flutitude/ext/mvt/mvt_tile.dart';
+import 'package:flutitude/ext/mvt/parse_kit/common.dart';
+import 'package:flutitude/ext/mvt/vector_tile.pb.dart';
+import 'package:flutitude/log.dart';
+import 'package:flutitude/map/layer/map_layer.dart';
+import 'package:flutitude/map/layer/map_tiles.dart';
+import 'package:flutitude/map/layer/utils.dart';
+import 'package:flutitude/map/map_canvas.dart';
 
 class BingTileSet {
   final MvtTile backgroundTile;

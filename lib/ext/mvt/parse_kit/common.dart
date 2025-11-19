@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:flutter_playground/ext/mvt/vector_tile.pbserver.dart';
-import 'package:flutter_playground/log.dart';
+import 'package:flutitude/ext/mvt/vector_tile.pbserver.dart';
+import 'package:flutitude/log.dart';
 
 Map<String, String> parseFeatureProps(Tile_Layer layer, Tile_Feature feature) {
   final props = <String, String>{};

@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_playground/base/location.dart';
-import 'package:flutter_playground/base/q_tree_key.dart';
-import 'package:flutter_playground/map/layer/map_layer.dart';
+import 'package:flutitude/base/location.dart';
+import 'package:flutitude/base/q_tree_key.dart';
+import 'package:flutitude/map/layer/map_layer.dart';
 
 class MapCanvas extends CustomPainter {
   final MapViewState state;
