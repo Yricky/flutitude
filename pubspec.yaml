@@ -1,4 +1,4 @@
-name: flutitude
+name: flutitude_app
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -40,6 +40,8 @@ dependencies:
   fixnum: ^1.1.1
   protobuf: ^3.1.0
   logger: ^2.5.0
+  flutitude:
+    path: ./flutitude
 
 dev_dependencies:
   flutter_test:
