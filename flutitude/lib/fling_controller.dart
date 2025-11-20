@@ -1,3 +1,4 @@
+import 'dart:async';
 
 import 'package:flutter/animation.dart';
 import 'package:flutter/gestures.dart';
@@ -8,28 +9,38 @@ import 'map/map_canvas.dart';
 
 class FlingController {
   final MapViewState state;
-  final AnimationController _controller;
-  final Function(VoidCallback) fn;
+  final StreamController<void> _repaintController =
+      StreamController.broadcast();
+  AnimationController? _controller;
+  Function(VoidCallback)? fn;
   late Velocity? _velocityUnit;
   late Location? _lastLocation;
 
-  FlingController(this.state, TickerProvider vsync, this.fn)
-      : _controller =
-  AnimationController(vsync: vsync, upperBound: double.infinity);
+  FlingController(this.state);
+  Stream<void> get repaintStream => _repaintController.stream;
 
-  void init() {
-    _controller.addListener(() {
+  void init(TickerProvider vsync, Function(VoidCallback) fn) {
+    _controller = AnimationController(
+      vsync: vsync,
+      upperBound: double.infinity,
+    );
+    _controller?.addListener(() {
       final screenZoom = MapViewState.TILE_SIZE * state.zoom();
       final velocity = _velocityUnit!;
       double locationDxPerSecond = velocity.pixelsPerSecond.dx / screenZoom;
       double locationDyPerSecond = velocity.pixelsPerSecond.dy / screenZoom;
-      final value = _controller.value;
-
+      final value = _controller?.value;
+      if (value == null) return;
       fn(() {
         if (value.abs() > 0.1 && _lastLocation != null) {
-          state.setCentral(_lastLocation! -
-              Location(
-                  locationDxPerSecond * value, locationDyPerSecond * value));
+          state.setCentral(
+            _lastLocation! -
+                Location(
+                  locationDxPerSecond * value,
+                  locationDyPerSecond * value,
+                ),
+          );
+          _repaintController.add(null);
         }
       });
     });
@@ -37,17 +48,20 @@ class FlingController {
 
   void applyZoomDelta(double delta, Offset zoomViewCenter) {
     state.applyZoomDelta(delta, zoomViewCenter);
+    _repaintController.add(null);
   }
 
   void setCentral(Location central) {
-    if (_controller.isAnimating) {
-      _controller.reset();
+    if (_controller?.isAnimating == true) {
+      _controller?.reset();
     }
     state.setCentral(central);
+    _repaintController.add(null);
   }
 
-  void dispose(){
-    _controller.dispose();
+  void dispose() {
+    _controller?.dispose();
+    _controller = null;
   }
 
   void endWithFling(Velocity velocity) {
@@ -59,6 +73,6 @@ class FlingController {
       0.0,
       velocity.pixelsPerSecond.distance,
     );
-    _controller.animateWith(simulation);
+    _controller?.animateWith(simulation);
   }
 }

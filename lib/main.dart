@@ -1,12 +1,13 @@
 import 'package:flutitude/base/q_tree_key.dart';
+import 'package:flutitude/base/wcs.dart';
+import 'package:flutitude/fling_controller.dart';
 import 'package:flutitude/map/layer/map_tiles.dart';
 import 'package:flutitude/map_widget.dart';
+import 'package:flutitude_app/bing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutitude/base/location.dart';
 import 'package:flutitude/map/map_canvas.dart';
 import 'package:flutitude/map/layer/map_layer.dart';
-
-import 'bing.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,10 +38,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final MapViewState state = MapViewState(
+  final FlingController flingController = FlingController(MapViewState(
     center: const Location(0.5, 0.5),
     zoomLvl: 1.5,
-  );
+  ));
 
   final BingLayers bingLayers = BingLayers(0);
 
@@ -48,11 +49,11 @@ class _MyHomePageState extends State<MyHomePage> {
     FallbackLayer(
         AsyncMapLayer(
             urlAndCacheImageTileLiader(
-                    (key) {
+                (key) {
                   return "https://gwxc.shipxy.com/tile.g?z=${key.depth}&x=${key.x}&y=${key.y}";
                 },
                 null,
-                    (key) {
+                (key) {
                   return "${key.depth}_${key.x}_${key.y}.png";
                 }),
             0.4), (int k) {
@@ -64,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
       )) as MapTile;
     }),
   ];
+  final WCS wcs = const WebMercator();
 
   double? zoom;
 
@@ -77,16 +79,11 @@ class _MyHomePageState extends State<MyHomePage> {
     layers.add(BingMapLayer(bingLayers, (s) {
       return s?.textTile;
     }));
-    bingLayers.getTileChangeStream().listen((event) {
-      setState(() {});
-    });
-    // for (var layer in layers) {
-    //   layer.getTileChangeStream().listen((event) {
-    //     setState(() {
-    //       // print("update:${event.keyString()}");
-    //     });
-    //   });
-    // }
+    for (var element in layers) {
+      element.getTileChangeStream().listen((event) {
+        setState(() {});
+      });
+    }
   }
 
   @override
@@ -96,17 +93,22 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-                child:MapWidget(state: state, layers: layers)
-            )
-          ],
-        ),
+      body: Stack(
+        children: [
+          Positioned.fill(
+              child: MapWidget(controller: flingController, layers: layers)),
+          Positioned(
+            bottom: 20,
+            left: 20,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              color: Colors.white.withAlpha(200),
+              child: Text(
+                  "${flingController.state.center.x},${flingController.state.center.y}\n${wcs.toLatLng(flingController.state.center)}"),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
-

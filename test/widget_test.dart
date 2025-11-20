@@ -7,7 +7,6 @@
 
 import 'package:flutitude/base/location.dart';
 import 'package:flutitude/base/q_tree_key.dart';
-import 'package:flutitude/ext/mvt/parse_kit/bing.dart';
 import 'package:flutitude/map/layer/map_layer.dart';
 import 'package:flutitude/map/layer/map_tiles.dart';
 import 'package:flutitude/map/map_canvas.dart';
@@ -123,9 +122,9 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(
-                child:MapWidget(state: state, layers: layers)
-            )
+            // Expanded(
+            //     child:MapWidget(state: state, layers: layers)
+            // )
           ],
         ),
       ),

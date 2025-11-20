@@ -32,12 +32,7 @@ class MapCanvas extends CustomPainter {
       QTreeKey.walk(topLeftKey, bottomRightKey).forEach((k) {
         final location = Location.fromQTreeKey(k);
         final pos = state.locationToViewPos(location, viewSize);
-        final rect = Rect.fromLTWH(
-          pos.dx,
-          pos.dy,
-          tileSize,
-          tileSize,
-        );
+        final rect = Rect.fromLTWH(pos.dx, pos.dy, tileSize, tileSize);
         final tile = layer.getTile(key: k, state: state);
         if (tile != null) {
           tile.draw(canvas, _paint, rect);
@@ -109,9 +104,10 @@ class MapViewState {
   Location topLeftLocation(Size viewSize) =>
       viewPosToLocation(Offset.zero, viewSize).wrap();
 
-  Location bottomRightLocation(Size viewSize) =>
-      viewPosToLocation(Offset(viewSize.width, viewSize.height), viewSize)
-          .wrap();
+  Location bottomRightLocation(Size viewSize) => viewPosToLocation(
+    Offset(viewSize.width, viewSize.height),
+    viewSize,
+  ).wrap();
 }
 
 class MapView extends StatelessWidget {
